@@ -1,0 +1,26 @@
+{
+  "name": "wa-book-order-system",
+  "version": "1.2.0",
+  "description": "WhatsApp Group Book Order Management System - Web Admin + System Monitor dalam 1 project Node.js, database SQLite lokal, terhubung ke WhatsApp lewat Baileys (scan QR)",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node scripts/seed.js"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@whiskeysockets/baileys": "^6.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "pino": "^9.4.0",
+    "qrcode": "^1.5.4"
+  }
+}

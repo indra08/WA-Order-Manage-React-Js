@@ -1,0 +1,23 @@
+# Web Admin + System Monitor jadi 1 service, 1 port (3000).
+# Koneksi WhatsApp memakai Baileys (scan QR sekali, sesi tersimpan di volume).
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-change-this-admin-token}
+      - AUTO_CONNECT_WHATSAPP=${AUTO_CONNECT_WHATSAPP:-true}
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID:-}
+      - DATA_DIR=/app/data
+      - BAILEYS_AUTH_DIR=/app/data/baileys_auth
+    volumes:
+      - app_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  app_data:
