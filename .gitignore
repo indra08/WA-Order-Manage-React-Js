@@ -6,4 +6,4 @@ data/*.json
 migrations/*
 .wrangler/
 wrangler.toml
-data/baileys_auth
+data/baileys_auth/
