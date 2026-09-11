@@ -3,3 +3,7 @@ data/*.json
 !data/.gitkeep
 .env
 *.log
+migrations/*
+.wrangler/
+wrangler.toml
+data/baileys_auth

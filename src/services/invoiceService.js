@@ -38,6 +38,7 @@ function getCustomerInvoice(groupCode, code) {
     return {
       replyId: r.id,
       title: book ? book.title : '(buku tidak diketahui)',
+      prefix: book ? book.prefix : null,
       price,
       quantity: r.quantity || 1,
       subtotal,

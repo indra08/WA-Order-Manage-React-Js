@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>WA Book Order - Admin Panel</title>
+<title>Cendekia Collection - Book Order</title>
 <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,8 +22,8 @@
       <a href="#" class="sidebar-logo">
         <img src="/assets/logo512.jpg" alt="Logo" class="sidebar-logo-img" />
         <div class="sidebar-logo-text">
-          <span class="sidebar-logo-title">Book Order</span>
-          <span class="sidebar-logo-subtitle">Admin Panel</span>
+          <span class="sidebar-logo-title">Cendekia Collection</span>
+          <span class="sidebar-logo-subtitle">Book Order</span>
         </div>
       </a>
     </div>
@@ -70,7 +70,7 @@
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
             </svg>
           </span>
-          <span class="text">Buku</span>
+          <span class="text">Buku & Posting</span>
         </button>
       </div>
       
@@ -110,6 +110,20 @@
             </svg>
           </span>
           <span class="text">Reports</span>
+        </button>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Help</div>
+        <button data-tab="tutorial">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </span>
+          <span class="text">Tutorial</span>
         </button>
       </div>
     </nav>
@@ -166,29 +180,133 @@
         <!-- ======================= -->
         <section class="panel" id="panel-whatsapp">
           <div class="card">
+            <div class="card-header">
+              <h3>Koneksi WhatsApp</h3>
+            </div>
             <div class="card-body">
-              <div class="wa-card-inner">
-                <div class="wa-qr-box" id="waQrBox">
-                  <div class="text-muted">Memuat status koneksi...</div>
+              <!-- Provider Selection -->
+              <div class="form-group">
+                <label class="form-label">Provider WhatsApp</label>
+                <div class="provider-cards">
+                  <label class="provider-card" id="providerBaileys">
+                    <input type="radio" name="provider" value="baileys" checked />
+                    <div class="provider-content">
+                      <div class="provider-icon">📱</div>
+                      <div class="provider-info">
+                        <strong>Baileys</strong>
+                        <small>Gratis, untuk development local. Scan QR code.</small>
+                      </div>
+                    </div>
+                  </label>
+                  <label class="provider-card" id="providerDripsender">
+                    <input type="radio" name="provider" value="dripsender" />
+                    <div class="provider-content">
+                      <div class="provider-icon">☁️</div>
+                      <div class="provider-info">
+                        <strong>DripSender</strong>
+                        <small>Rp 100rb/bulan, webhook ke server. Untuk production.</small>
+                      </div>
+                    </div>
+                  </label>
+                  <label class="provider-card" id="providerFonnte">
+                    <input type="radio" name="provider" value="fonnte" />
+                    <div class="provider-content">
+                      <div class="provider-icon">🚀</div>
+                      <div class="provider-info">
+                        <strong>Fonnte</strong>
+                        <small>Rp 50rb/bulan, API-based. md.fonnte.com</small>
+                      </div>
+                    </div>
+                  </label>
                 </div>
-                <div class="wa-info">
-                  <h3>Koneksi WhatsApp (Baileys)</h3>
-                  <p>Sistem terhubung langsung ke WhatsApp memakai nomor admin — tidak perlu provider berbayar. Scan QR code di samping dengan WhatsApp di HP: <strong>Setelan → Perangkat Tertaut → Tautkan Perangkat</strong>.</p>
-                  <div class="wa-status-row">
-                    <span class="badge badge-lg" id="waStatusBadge">MEMERIKSA...</span>
-                    <span class="text-muted" id="waNumberText"></span>
+              </div>
+
+              <!-- Baileys Config -->
+              <div id="baileysSection">
+                <div class="alert alert-info">
+                  <strong>Baileys</strong> — Koneksi langsung ke WhatsApp via nomor HP. Gratis untuk development.
+                </div>
+                <div class="wa-card-inner">
+                  <div class="wa-qr-box" id="waQrBox">
+                    <div class="text-muted">Klik "Hubungkan" untuk scan QR code</div>
                   </div>
-                  <div class="wa-actions">
-                    <button class="btn btn-primary" id="waConnectBtn">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
-                        <path d="M23 4v6h-6M1 20v-6h6"/>
-                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                      </svg>
-                      Hubungkan / Refresh QR
-                    </button>
-                    <button class="btn btn-outline-danger" id="waLogoutBtn">Putuskan Sesi</button>
+                  <div class="wa-info">
+                    <div class="wa-status-row">
+                      <span class="badge badge-lg" id="waStatusBadge">TIDAK TERSAMBUNG</span>
+                      <span class="text-muted" id="waNumberText"></span>
+                    </div>
+                    <div class="wa-actions">
+                      <button class="btn btn-primary" id="waConnectBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                          <path d="M23 4v6h-6M1 20v-6h6"/>
+                          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                        Hubungkan / Refresh QR
+                      </button>
+                      <button class="btn btn-outline-danger" id="waLogoutBtn">Putuskan Sesi</button>
+                    </div>
+                    <p class="text-muted mt-lg" style="font-size: 12px;">Scan dengan WhatsApp HP: <strong>Setelan → Perangkat Tertaut → Tautkan Perangkat</strong></p>
                   </div>
-                  <p class="text-muted mt-lg" style="font-size: 12px;">Setelah terhubung, sesi tersimpan otomatis sehingga tidak perlu scan ulang setiap restart server.</p>
+                </div>
+              </div>
+
+              <!-- DripSender Config -->
+              <div id="dripsenderSection" style="display:none;">
+                <div class="alert alert-success">
+                  <strong>DripSender</strong> — Webhook ke server. Lebih stabil untuk production.
+                  <br><small>Daftar di <a href="https://portal.dripsender.id" target="_blank">portal.dripsender.id</a> (Rp 100rb/bulan)</small>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">DripSender API Key</label>
+                  <input type="password" id="dripsenderApiKey" class="form-input" placeholder="Masukkan API Key" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Webhook URL (untuk DripSender)</label>
+                  <div class="input-group">
+                    <input type="text" id="webhookUrl" class="form-input" readonly />
+                    <button class="btn btn-secondary" id="copyWebhookBtn">Copy</button>
+                  </div>
+                  <small class="text-muted">Copy URL ini ke DripSender webhook settings</small>
+                </div>
+                <div class="wa-actions">
+                  <button class="btn btn-primary" id="dripsenderConnectBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                    Simpan & Aktifkan
+                  </button>
+                </div>
+              </div>
+
+              <!-- Fonnte Config -->
+              <div id="fonnteSection" style="display:none;">
+                <div class="alert alert-warning">
+                  <strong>Fonnte</strong> — API-based WhatsApp. Lebih ringan dan cepat.
+                  <br><small>Daftar di <a href="https://md.fonnte.com" target="_blank">md.fonnte.com</a> (Rp 50rb/bulan)</small>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Fonnte API Key</label>
+                  <input type="password" id="fonnteApiKey" class="form-input" placeholder="Masukkan API Key dari md.fonnte.com" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Device ID</label>
+                  <input type="text" id="fonnteDeviceId" class="form-input" placeholder="Device ID (opsional)" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Webhook URL (untuk Fonnte)</label>
+                  <div class="input-group">
+                    <input type="text" id="fonnteWebhookUrl" class="form-input" readonly />
+                    <button class="btn btn-secondary" id="copyFonnteWebhookBtn">Copy</button>
+                  </div>
+                  <small class="text-muted">Copy URL ini ke Fonnte webhook settings</small>
+                </div>
+                <div class="wa-actions">
+                  <button class="btn btn-primary" id="fonnteConnectBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                    Simpan & Aktifkan
+                  </button>
                 </div>
               </div>
             </div>
@@ -265,43 +383,161 @@
         </section>
 
         <!-- ======================= -->
-        <!-- BOOKS PANEL -->
+        <!-- BOOKS PANEL (with Tabs) -->
         <!-- ======================= -->
         <section class="panel" id="panel-books">
+          <!-- Tab Navigation -->
+          <div class="tab-nav">
+            <button class="tab-btn active" data-booktab="posting">Posting Buku</button>
+            <button class="tab-btn" data-booktab="katalog">Katalog Buku</button>
+          </div>
+
+          <!-- Tab: Posting Buku -->
+          <div class="tab-content active" id="tab-posting">
+            <div class="card">
+              <div class="card-header">
+                <h3>Posting Buku ke Group</h3>
+              </div>
+              <div class="card-body">
+                <p class="text-muted mb-xl" style="font-size: 12px;">
+                  Posting buku ke group tertentu. Buku akan otomatis ditambahkan ke katalog jika belum ada.
+                </p>
+                <form class="form-inline" id="postForm" style="margin-bottom: 20px;">
+                  <div class="form-group">
+                    <select name="groupId" id="postGroupSelect" class="form-input" required style="min-width: 150px;">
+                      <option value="">Pilih Group...</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <input name="prefix" class="form-input" placeholder="Prefix" style="width:80px;" />
+                  </div>
+                  <div class="form-group">
+                    <input name="title" class="form-input" placeholder="Judul Buku" required style="min-width: 200px;" />
+                  </div>
+                  <div class="form-group">
+                    <input name="price" type="number" class="form-input" placeholder="Harga (Rp)" required style="width:120px;" />
+                  </div>
+                  <div class="form-group">
+                    <input name="stock" type="number" class="form-input" placeholder="Stok" value="1" style="width:80px;" />
+                  </div>
+                  <div class="form-group">
+                    <button class="btn btn-primary" type="submit">Posting</button>
+                  </div>
+                </form>
+                <p class="text-muted" style="font-size: 12px;">
+                  Contoh format: <code>BB Nexus - 20k</code> atau <code>Nexus - 20k</code> (tanpa prefix)
+                </p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Riwayat Posting</h3>
+                <button class="btn btn-secondary btn-sm" id="refreshPostsBtn">Refresh</button>
+              </div>
+              <div class="card-body">
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Waktu</th>
+                        <th>Group</th>
+                        <th>Buku</th>
+                        <th>Harga</th>
+                        <th>Stok</th>
+                      </tr>
+                    </thead>
+                    <tbody id="postsTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Katalog Buku -->
+          <div class="tab-content" id="tab-katalog">
+            <div class="card">
+              <div class="card-header">
+                <h3>Katalog Buku</h3>
+              </div>
+              <div class="card-body">
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Judul</th>
+                        <th>Prefix</th>
+                        <th>Harga Nett</th>
+                        <th>Stok</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="booksTbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================= -->
+        <!-- POSTS PANEL -->
+        <!-- ======================= -->
+        <section class="panel" id="panel-posts">
           <div class="card">
             <div class="card-header">
-              <h3>Katalog Buku</h3>
+              <h3>Posting Buku Baru</h3>
             </div>
             <div class="card-body">
-              <form class="form-inline" id="bookForm" style="margin-bottom: 20px;">
+              <p class="text-muted mb-xl" style="font-size: 12px;">
+                Buat posting buku untuk group tertentu. Setelah posting dibuat, customer bisa reply dan akan otomatis di-link ke buku ini.
+              </p>
+              <form class="form-inline" id="postForm" style="margin-bottom: 20px;">
                 <div class="form-group">
-                  <input name="title" class="form-input" placeholder="Judul buku" required />
+                  <select name="groupId" id="postGroupSelect" class="form-input" required style="min-width: 150px;">
+                    <option value="">Pilih Group...</option>
+                  </select>
                 </div>
                 <div class="form-group">
-                  <input name="prefix" class="form-input" placeholder="Prefix (BB/HC)" style="width:100px;" />
+                  <input name="prefix" class="form-input" placeholder="Prefix" style="width:80px;" />
                 </div>
                 <div class="form-group">
-                  <input name="nettPrice" type="number" class="form-input" placeholder="Harga nett" required />
+                  <input name="title" class="form-input" placeholder="Judul Buku" required style="min-width: 200px;" />
                 </div>
                 <div class="form-group">
-                  <input name="stock" type="number" class="form-input" placeholder="Stok" value="1" style="width:80px;" required />
+                  <input name="price" type="number" class="form-input" placeholder="Harga (Rp)" required style="width:120px;" />
                 </div>
                 <div class="form-group">
-                  <button class="btn btn-primary" type="submit">Tambah Buku</button>
+                  <input name="stock" type="number" class="form-input" placeholder="Stok" value="1" style="width:80px;" />
+                </div>
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Posting</button>
                 </div>
               </form>
+              <p class="text-muted mb-lg" style="font-size: 12px;">
+                Contoh format: <code>BB Nexus - 20k</code> atau <code>BB/Nexus - 20k</code> atau <code>Nexus - 20k</code> (tanpa prefix)
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Riwayat Posting</h3>
+              <button class="btn btn-secondary btn-sm" id="refreshPostsBtn">Refresh</button>
+            </div>
+            <div class="card-body">
               <div class="table-wrapper">
                 <table>
                   <thead>
                     <tr>
-                      <th>Judul</th>
-                      <th>Prefix</th>
-                      <th>Harga Nett</th>
+                      <th>Waktu</th>
+                      <th>Group</th>
+                      <th>Buku</th>
+                      <th>Harga</th>
                       <th>Stok</th>
-                      <th>Status</th>
                     </tr>
                   </thead>
-                  <tbody id="booksTbody"></tbody>
+                  <tbody id="postsTbody"></tbody>
                 </table>
               </div>
             </div>
@@ -335,6 +571,7 @@
                     <tr>
                       <th>Waktu</th>
                       <th>Customer</th>
+                      <th>Kode</th>
                       <th>Buku</th>
                       <th>Reply</th>
                       <th>Qty</th>
@@ -358,7 +595,10 @@
               <h3>Cek Rekapan Customer</h3>
             </div>
             <div class="card-body">
-              <p class="text-muted mb-lg" style="font-size: 12px;">Halaman ini juga tersedia untuk customer secara publik lewat <code>/api/customer/check?group=...&amp;code=...</code></p>
+              <p class="text-muted mb-lg" style="font-size: 12px;">
+                 Masukkan <strong>Kode Group</strong> (misal: Group 6) dan <strong>Kode Customer</strong> (4-5 digit terakhir nomor HP). 
+                 Customer juga bisa cek sendiri via <code>/api/customer/check?group=...&amp;code=...</code>
+               </p>
               <form class="form-inline" id="invoiceForm" style="margin-bottom: 20px;">
                 <div class="form-group">
                   <input name="group" class="form-input" placeholder="Kode Group (mis: Group 6)" required />
@@ -435,6 +675,327 @@
                   </thead>
                   <tbody id="groupsReportTbody"></tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================= -->
+        <!-- TUTORIAL PANEL -->
+        <!-- ======================= -->
+        <section class="panel" id="panel-tutorial">
+          <div class="card">
+            <div class="card-header">
+              <h3>Alur Penggunaan Sistem</h3>
+            </div>
+            <div class="card-body">
+              <p class="text-muted mb-xl">Panduan lengkap cara menggunakan sistem Book Order melalui WhatsApp Group.</p>
+              
+              <!-- Step 1 -->
+              <div class="tutorial-step">
+                <div class="tutorial-step-header">
+                  <div class="tutorial-step-number">1</div>
+                  <h4>Admin Posting Buku</h4>
+                </div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble chat-admin">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Admin</span>
+                      <span class="chat-time">09:00</span>
+                    </div>
+                    <div class="chat-content">
+                      <div class="chat-image-placeholder">📚 [Gambar Buku]</div>
+                      <p><strong>BB Pop Up Learning All About Animals - 130k nett✨</strong></p>
+                    </div>
+                  </div>
+                  <div class="chat-bubble chat-admin">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Admin</span>
+                      <span class="chat-time">09:01</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>Stok: <strong>5</strong> | Preview: <a href="#">youtube.com/xxx</a></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="tutorial-note">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <span>Format posting didukung: <code>BB Judul - Harga</code>, <code>BB/Judul - Harga</code>, atau <code>Judul - Harga</code> (tanpa prefix)</span>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="tutorial-step">
+                <div class="tutorial-step-header">
+                  <div class="tutorial-step-number">2</div>
+                  <h4>Customer Reply "Fix" / "Mau"</h4>
+                </div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble chat-customer">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Sintha</span>
+                      <span class="chat-time">09:15</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>Fix</p>
+                    </div>
+                  </div>
+                  <div class="chat-bubble chat-customer">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Za</span>
+                      <span class="chat-time">09:16</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>Mau 2 ya</p>
+                    </div>
+                  </div>
+                  <div class="chat-bubble chat-customer">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Rina</span>
+                      <span class="chat-time">09:20</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>Mau</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="tutorial-note">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <span>Customer reply dengan kata: <code>Fix</code>, <code>Mau</code>, <code>Mau 2</code>, <code>Pesan</code>, dll. Sistem mendeteksi sebagai <strong>Purchase Intent</strong>.</span>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="tutorial-step">
+                <div class="tutorial-step-header">
+                  <div class="tutorial-step-number">3</div>
+                  <h4>Sistem Mendeteksi & Admin Konfirmasi</h4>
+                </div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble chat-system">
+                    <div class="chat-meta">
+                      <span class="chat-sender">System Auto</span>
+                      <span class="chat-time">09:21</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>📋 <strong>New Reply Detected:</strong></p>
+                      <ul>
+                        <li>Sintha - "Fix" → Pop Up Animals (Rp130k)</li>
+                        <li>Za - "Mau 2" → Pop Up Animals (Rp130k x2)</li>
+                        <li>Rina - "Mau" → Pop Up Animals (Rp130k)</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="chat-bubble chat-admin">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Admin</span>
+                      <span class="chat-time">09:30</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>✅ Sintha</p>
+                    </div>
+                  </div>
+                  <div class="chat-bubble chat-admin">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Admin</span>
+                      <span class="chat-time">09:31</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>✅ Za</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="tutorial-note">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  <span>Admin memberikan <code>✅</code> untuk konfirmasi. Reply dengan ✅ akan <strong>masuk tagihan</strong>.</span>
+                </div>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="tutorial-step">
+                <div class="tutorial-step-header">
+                  <div class="tutorial-step-number">4</div>
+                  <h4>Stok Habis → Reaction ❌ atau X</h4>
+                </div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble chat-customer">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Dewi</span>
+                      <span class="chat-time">09:22</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>Fix 1</p>
+                    </div>
+                  </div>
+                  <div class="chat-bubble chat-admin">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Admin</span>
+                      <span class="chat-time">09:32</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>❌ Dewi - Stok habis</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="tutorial-note danger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                  <span>Order dengan <code>❌</code> atau <code>X</code> <strong>TIDAK masuk tagihan</strong>.</span>
+                </div>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="tutorial-step">
+                <div class="tutorial-step-header">
+                  <div class="tutorial-step-number">5</div>
+                  <h4>Fix Ulang (Retry Order)</h4>
+                </div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble chat-admin">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Admin</span>
+                      <span class="chat-time">18:00</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>📢 <em>Cuma nemu 1, yg tadi di ❌ bisa fix ulang</em></p>
+                    </div>
+                  </div>
+                  <div class="chat-bubble chat-customer">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Dewi</span>
+                      <span class="chat-time">18:05</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>Fix</p>
+                    </div>
+                  </div>
+                  <div class="chat-bubble chat-admin">
+                    <div class="chat-meta">
+                      <span class="chat-sender">Admin</span>
+                      <span class="chat-time">18:06</span>
+                    </div>
+                    <div class="chat-content">
+                      <p>✅ Dewi</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="tutorial-note success">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>Customer yang sebelumnya ❌ bisa <strong>fix ulang</strong> jika admin menemukan stok.</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Quick Reference Card -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Quick Reference - Status Kode</h3>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Status</th>
+                      <th>Arti</th>
+                      <th>Masuk Tagihan?</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="badge WAITING_STOCK_CHECK">WAITING_STOCK_CHECK</span></td>
+                      <td>Baru reply, belum dicek stok</td>
+                      <td><span class="text-danger">Belum</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="badge CONFIRMED">✅ CONFIRMED</span></td>
+                      <td>Stok ada, admin konfirmasi</td>
+                      <td><span class="text-success">Ya</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="badge REJECTED">❌ REJECTED</span></td>
+                      <td>Stok habis / ditolak</td>
+                      <td><span class="text-danger">Tidak</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="badge WAITING_RETRY">WAITING_RETRY</span></td>
+                      <td>Bisa fix ulang</td>
+                      <td><span class="text-warning">Tunggu</span></td>
+                    </tr>
+                    <tr>
+                      <td><span class="badge INVOICED">INVOICED</span></td>
+                      <td>Sudah masuk rekapan</td>
+                      <td><span class="text-success">Ya</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Keyword Reference -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Keyword Purchase Intent</h3>
+            </div>
+            <div class="card-body">
+              <p class="text-muted mb-lg">Kata-kata yang dideteksi sebagai trigger order (purchase intent):</p>
+              <div class="keyword-tags">
+                <span class="keyword-tag">fix</span>
+                <span class="keyword-tag">fix 1</span>
+                <span class="keyword-tag">fix 2</span>
+                <span class="keyword-tag">mau</span>
+                <span class="keyword-tag">mau 1</span>
+                <span class="keyword-tag">mau 2</span>
+                <span class="keyword-tag">mau 3</span>
+                <span class="keyword-tag">mau ya</span>
+                <span class="keyword-tag">pesan</span>
+                <span class="keyword-tag">ambil</span>
+                <span class="keyword-tag">ambil satu</span>
+                <span class="keyword-tag">ikut</span>
+                <span class="keyword-tag">yes</span>
+                <span class="keyword-tag">saya mau</span>
+                <span class="keyword-tag">aku mau</span>
+              </div>
+              <p class="text-muted mt-lg" style="font-size: 12px;">
+                <strong>Catatan:</strong> Kata-kata di atas adalah purchase intent, BUKAN otomatis order. Admin harus memberikan ✅ untuk mengkonfirmasi.
+              </p>
+            </div>
+          </div>
+
+          <!-- Tips & Tricks -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Tips & Tricks</h3>
+            </div>
+            <div class="card-body">
+              <div class="tips-grid">
+                <div class="tip-card">
+                  <div class="tip-icon">📝</div>
+                  <h5>Buku & Posting</h5>
+                  <p>Gunakan menu <strong>Buku & Posting</strong> untuk posting buku ke group dan melihat katalog. Buku otomatis masuk katalog saat posting.</p>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">��</div>
+                  <h5>Multiple Upload</h5>
+                  <p>Bisa upload judul buku yang sama beberapa kali dalam 1 hari. Stok akan berkurang setiap ada konfirmasi.</p>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">📊</div>
+                  <h5>Auto Rekapan</h5>
+                  <p>Order dengan ✅ otomatis masuk Google Sheet dengan format: Group, Tanggal, Jam, No. HP, Nama, Kode, Jumlah, Harga, Subtotal.</p>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">🔢</div>
+                  <h5>Kode Customer</h5>
+                  <p>Kode = 4-5 digit terakhir nomor HP. Jika ada duplikasi dengan customer lain, gunakan 5 digit.</p>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">📱</div>
+                  <h5>Cek Rekapan</h5>
+                  <p>Customer bisa cek tagihan via web dengan memasukkan Group Code + Kode.</p>
+                </div>
               </div>
             </div>
           </div>

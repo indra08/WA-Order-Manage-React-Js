@@ -3,17 +3,21 @@
  * WA Book Order Management System
  */
 
-const API = '/api/admin';
+// API base URL - auto-detect environment
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE = isLocal ? '' : 'https://wa-book-order-api.indra-maulana08.workers.dev';
+const API = API_BASE + '/api/admin';
 
 // Page metadata
 const PAGE_META = {
   dashboard: ['Dashboard', 'Ringkasan aktivitas penjualan buku via WhatsApp Group'],
   whatsapp: ['WhatsApp Connection', 'Hubungkan nomor WhatsApp admin untuk mulai memonitor group'],
   groups: ['Groups', 'Kelola group WhatsApp yang dimonitor sistem'],
-  books: ['Buku', 'Kelola katalog & stok buku'],
+  books: ['Buku & Posting', 'Posting dan katalog buku'],
   replies: ['Incoming Replies', 'Antrian konfirmasi order dari customer'],
   invoice: ['Cek Rekapan', 'Cek tagihan customer berdasarkan Group + Kode'],
   reports: ['Reports', 'Laporan penjualan, produk, dan performa group'],
+  tutorial: ['Tutorial', 'Panduan lengkap cara menggunakan sistem Book Order'],
 };
 
 // Icon SVG templates for stat cards
@@ -129,13 +133,28 @@ function initTabs() {
       document.getElementById('sidebar').classList.remove('is-open');
     });
   });
+  
+  // Book panel sub-tabs
+  document.querySelectorAll('.tab-btn[data-booktab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const subTab = btn.dataset.booktab;
+      
+      // Update active tab button
+      document.querySelectorAll('.tab-btn[data-booktab]').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Update active tab content
+      document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
+      document.getElementById('tab-' + subTab)?.classList.add('active');
+    });
+  });
 }
 
 function loadTab(tab) {
   if (tab === 'dashboard') loadSummary();
   if (tab === 'whatsapp') { refreshWaStatus(); loadWaGroups(); }
   if (tab === 'groups') loadGroups();
-  if (tab === 'books') loadBooks();
+  if (tab === 'books') { loadBooks(); loadGroupsForPost(); loadPosts(); }
   if (tab === 'replies') loadReplies();
   if (tab === 'reports') loadReports();
 }
@@ -374,6 +393,104 @@ document.getElementById('waLogoutBtn').addEventListener('click', async () => {
 
 document.getElementById('refreshWaGroupsBtn').addEventListener('click', loadWaGroups);
 
+// =====================
+// WHATSAPP PROVIDER SELECTION
+// =====================
+const baileysSection = document.getElementById('baileysSection');
+const dripsenderSection = document.getElementById('dripsenderSection');
+const fonnteSection = document.getElementById('fonnteSection');
+const providerRadios = document.querySelectorAll('input[name="provider"]');
+
+// Handle provider selection
+providerRadios.forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    if (e.target.value === 'baileys') {
+      baileysSection.style.display = 'block';
+      dripsenderSection.style.display = 'none';
+      fonnteSection.style.display = 'none';
+    } else if (e.target.value === 'dripsender') {
+      baileysSection.style.display = 'none';
+      dripsenderSection.style.display = 'block';
+      fonnteSection.style.display = 'none';
+    } else if (e.target.value === 'fonnte') {
+      baileysSection.style.display = 'none';
+      dripsenderSection.style.display = 'none';
+      fonnteSection.style.display = 'block';
+    }
+  });
+});
+
+// Copy webhook URL (DripSender)
+document.getElementById('copyWebhookBtn').addEventListener('click', () => {
+  const url = document.getElementById('webhookUrl').value;
+  navigator.clipboard.writeText(url).then(() => {
+    toast('Webhook URL berhasil dicopy', 'success');
+  }).catch(() => {
+    toast('Gagal copy URL', 'error');
+  });
+});
+
+// Copy webhook URL (Fonnte)
+document.getElementById('copyFonnteWebhookBtn').addEventListener('click', () => {
+  const url = document.getElementById('fonnteWebhookUrl').value;
+  navigator.clipboard.writeText(url).then(() => {
+    toast('Webhook URL berhasil dicopy', 'success');
+  }).catch(() => {
+    toast('Gagal copy URL', 'error');
+  });
+});
+
+// DripSender connect
+document.getElementById('dripsenderConnectBtn').addEventListener('click', async () => {
+  const apiKey = document.getElementById('dripsenderApiKey').value;
+  if (!apiKey) {
+    toast('Masukkan API Key DripSender', 'error');
+    return;
+  }
+  try {
+    await api('/whatsapp/dripsender/configure', {
+      method: 'POST',
+      body: JSON.stringify({ apiKey })
+    });
+    toast('DripSender berhasil dikonfigurasi', 'success');
+    refreshWaStatus();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+});
+
+// Fonnte connect
+document.getElementById('fonnteConnectBtn').addEventListener('click', async () => {
+  const apiKey = document.getElementById('fonnteApiKey').value;
+  const deviceId = document.getElementById('fonnteDeviceId').value;
+  if (!apiKey) {
+    toast('Masukkan API Key Fonnte', 'error');
+    return;
+  }
+  try {
+    await api('/whatsapp/fonnte/configure', {
+      method: 'POST',
+      body: JSON.stringify({ apiKey, deviceId })
+    });
+    toast('Fonnte berhasil dikonfigurasi', 'success');
+    refreshWaStatus();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+});
+
+// Set webhook URL based on environment
+function setWebhookUrl() {
+  const baseUrl = isLocal ? window.location.origin : `https://wa-book-order-api.indra-maulana08.workers.dev`;
+  
+  const webhookUrl = document.getElementById('webhookUrl');
+  if (webhookUrl) webhookUrl.value = `${baseUrl}/api/webhook/message`;
+  
+  const fonnteWebhookUrl = document.getElementById('fonnteWebhookUrl');
+  if (fonnteWebhookUrl) fonnteWebhookUrl.value = `${baseUrl}/api/webhook/message`;
+}
+setWebhookUrl();
+
 // Poll status every 3 seconds
 setInterval(refreshWaStatus, 3000);
 
@@ -452,23 +569,70 @@ async function loadBooks() {
   }
 }
 
-document.getElementById('bookForm').addEventListener('submit', async (e) => {
+// Note: Book form is now integrated into posting form (postForm)
+// When posting, if book doesn't exist, it will be auto-created
+
+// =====================
+// POSTS
+// =====================
+let cachedGroups = [];
+
+async function loadGroupsForPost() {
+  try {
+    cachedGroups = await api('/groups');
+    const select = document.getElementById('postGroupSelect');
+    select.innerHTML = '<option value="">Pilih Group...</option>' + 
+      cachedGroups
+        .filter(g => g.active)
+        .map(g => `<option value="${g.id}">${g.code} - ${g.name}</option>`)
+        .join('');
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function loadPosts() {
+  try {
+    const posts = await api('/posts');
+    document.getElementById('postsTbody').innerHTML = posts
+      .map(p => {
+        const bookTitle = p.book ? (p.book.prefix ? `<span class="badge secondary" style="margin-right:6px;">${p.book.prefix}</span>${p.book.title}` : p.book.title) : '-';
+        const price = p.priceSnapshot || (p.book ? p.book.nettPrice : '-');
+        return `
+          <tr>
+            <td class="text-muted" style="white-space:nowrap;">${fmtDate(p.postedAt)}</td>
+            <td>${p.group ? p.group.code : '-'}</td>
+            <td><strong>${bookTitle}</strong></td>
+            <td>${price !== '-' ? rupiah(price) : '-'}</td>
+            <td>${p.stockSnapshot ?? p.book?.stock ?? '-'}</td>
+          </tr>
+        `;
+      })
+      .join('') || '<tr><td colspan="5" class="text-muted">Belum ada posting.</td></tr>';
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+document.getElementById('postForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const form = Object.fromEntries(new FormData(e.target));
-  form.nettPrice = Number(form.nettPrice);
+  form.price = Number(form.price);
   form.stock = Number(form.stock);
   try {
-    await api('/books', { 
+    await api('/posts', { 
       method: 'POST', 
       body: JSON.stringify(form) 
     });
     e.target.reset();
-    toast('Buku ditambahkan', 'success');
-    loadBooks();
+    toast('Posting berhasil dibuat! Customer bisa langsung reply untuk order.', 'success');
+    loadPosts();
   } catch (err) {
     toast(err.message, 'error');
   }
 });
+
+document.getElementById('refreshPostsBtn').addEventListener('click', loadPosts);
 
 // =====================
 // REPLIES
@@ -501,6 +665,7 @@ async function loadReplies() {
           if (r.status === 'REJECTED') {
             actions.push(`<button class="btn btn-warning btn-sm" onclick="retryReply('${r.id}')">Fix Ulang</button>`);
           }
+          const bookTitle = r.book ? (r.book.prefix ? `<span class="badge secondary" style="margin-right:6px;">${r.book.prefix}</span>${r.book.title}` : r.book.title) : '-';
           return `
             <tr>
               <td class="text-muted" style="white-space:nowrap;">${fmtDate(r.replyTimestamp)}</td>
@@ -508,7 +673,8 @@ async function loadReplies() {
                 <strong>${r.customer ? r.customer.name : '-'}</strong>
                 <div class="text-muted" style="font-size:11px;">${r.customer ? r.customer.phone : ''}</div>
               </td>
-              <td>${r.book ? r.book.title : '-'}</td>
+              <td><code class="text-primary" style="font-weight:600;">${r.customer ? r.customer.code : '-'}</code></td>
+              <td>${bookTitle}</td>
               <td><em>"${r.replyText}"</em></td>
               <td>${r.quantity || 1}</td>
               <td><span class="badge ${r.status}">${r.status}</span></td>
@@ -516,7 +682,7 @@ async function loadReplies() {
             </tr>
           `;
         })
-        .join('') || '<tr><td colspan="7" class="text-muted">Belum ada reply masuk.</td></tr>';
+        .join('') || '<tr><td colspan="8" class="text-muted">Belum ada reply masuk.</td></tr>';
   } catch (err) {
     toast(err.message, 'error');
   }
@@ -579,8 +745,11 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     resultEl.innerHTML = `
       <div class="card" style="margin-top:20px;">
         <div class="card-header">
-          <h3>${data.customer.name} — ${data.customer.code}</h3>
-          <span class="badge">${data.group.code}</span>
+          <h3>${data.customer.name}</h3>
+          <div class="d-flex gap-sm">
+            <span class="badge success">Kode: ${data.customer.code}</span>
+            <span class="badge primary">${data.group.code}</span>
+          </div>
         </div>
         <div class="card-body">
           <div class="table-wrapper">
@@ -597,16 +766,19 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
               </thead>
               <tbody>
                 ${data.items.length > 0 
-                  ? data.items.map((item, i) => `
-                      <tr>
-                        <td>${i + 1}</td>
-                        <td><strong>${item.title}</strong></td>
-                        <td>${rupiah(item.price)}</td>
-                        <td>${item.quantity}</td>
-                        <td><strong>${rupiah(item.subtotal)}</strong></td>
-                        <td><span class="badge ${item.status}">${item.status}</span></td>
-                      </tr>
-                    `).join('')
+                  ? data.items.map((item, i) => {
+                      const titleWithPrefix = item.prefix ? `<span class="badge secondary" style="margin-right:6px;">${item.prefix}</span>${item.title}` : item.title;
+                      return `
+                        <tr>
+                          <td>${i + 1}</td>
+                          <td><strong>${titleWithPrefix}</strong></td>
+                          <td>${rupiah(item.price)}</td>
+                          <td>${item.quantity}</td>
+                          <td><strong>${rupiah(item.subtotal)}</strong></td>
+                          <td><span class="badge ${item.status}">${item.status}</span></td>
+                        </tr>
+                      `;
+                    }).join('')
                   : '<tr><td colspan="6" class="text-muted">Belum ada order yang masuk tagihan.</td></tr>'
                 }
               </tbody>

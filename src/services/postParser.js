@@ -12,8 +12,10 @@ const YOUTUBE_REGEX = /(https?:\/\/(?:www\.)?(?:youtu\.be\/|youtube\.com\/watch\
 
 // Contoh yang harus tertangkap:
 //   "BB/ Pop Up Learning All about Animals - 130k nett✨"
+//   "BB Pop Up Learning All about Animals - 130k nett"  (tanpa slash)
 //   "HC Usborne Lift the Flap QnA about Food - 140k nett✨"
-const HEADER_REGEX = /^([A-Za-z]{1,6})\s*\/?\s*(.+?)\s*-\s*(\d+(?:[.,]\d+)?)\s*(k|rb|ribu)?\s*(nett)?/i;
+//   "Nexus - 20k nett"  (tanpa prefix)
+const HEADER_REGEX = /^([A-Za-z]{1,6})(?:\s*\/?\s*|\s+)(.+?)\s*-\s*(\d+(?:[.,]\d+)?)\s*(k|rb|ribu)?\s*(nett)?/i;
 
 function parsePrice(rawNumber, unit) {
   const num = parseFloat(String(rawNumber).replace(',', '.'));

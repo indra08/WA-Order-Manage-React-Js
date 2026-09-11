@@ -68,7 +68,24 @@ function receiveReply({
   replyText,
   replyTimestamp,
 }) {
-  const post = postId ? posts.find(postId) : posts.findOne((p) => p.waMessageId === parentMessageId);
+  // Cari post: 1) by postId, 2) by waMessageId, 3) fallback ke post terbaru di group (untuk manual posting)
+  let post = null;
+  if (postId) {
+    post = posts.find(postId);
+  }
+  if (!post && parentMessageId) {
+    post = posts.findOne((p) => p.waMessageId === parentMessageId);
+  }
+  // Fallback: ambil post terbaru di group ini (untuk manual posting tanpa WhatsApp)
+  if (!post && groupId) {
+    const groupPosts = posts.query((p) => p.groupId === groupId && p.status === 'Active');
+    if (groupPosts.length > 0) {
+      // Urutkan dari terbaru
+      groupPosts.sort((a, b) => new Date(b.postedAt) - new Date(a.postedAt));
+      post = groupPosts[0];
+    }
+  }
+  
   const { intent, quantity } = analyzeReply(replyText);
 
   const customer = findOrCreateCustomer({ name: customerName, phone: customerPhone, groupId });
@@ -216,8 +233,8 @@ function enrichReply(reply) {
   return {
     ...reply,
     customer: customer ? { id: customer.id, name: customer.name, phone: customer.phone, code: customer.code } : null,
-    book: book ? { id: book.id, title: book.title, price: book.nettPrice ?? book.price } : null,
-    post: post ? { id: post.id, originalText: post.originalText } : null,
+    book: book ? { id: book.id, title: book.title, prefix: book.prefix, price: book.nettPrice ?? book.price, stock: book.stock } : null,
+    post: post ? { id: post.id, originalText: post.originalText, priceSnapshot: post.priceSnapshot } : null,
   };
 }
 

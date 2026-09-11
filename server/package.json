@@ -1,0 +1,14 @@
+{
+  "name": "wa-book-order-baileys",
+  "version": "1.0.0",
+  "description": "Baileys WhatsApp client for WA Book Order",
+  "main": "baileys.js",
+  "scripts": {
+    "start": "node baileys.js",
+    "dev": "node baileys.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.9",
+    "axios": "^1.6.0"
+  }
+}
